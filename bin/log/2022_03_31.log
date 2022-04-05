@@ -1,0 +1,6 @@
+2022-03-31 22:22:48.590525 [info]:  --------------Server Init!------------------
+2022-03-31 22:23:38.828091 [info]:  Port:9006, OpenLinger: false
+2022-03-31 22:23:45.084329 [info]:  Listen Mode: ET, OpenConn Mode: ET
+2022-03-31 22:23:46.725027 [info]:  LogSys level: 0
+2022-03-31 22:23:47.808141 [info]:  srcDir: /home/tau/MyTinyWebServer/bin/../resources/
+2022-03-31 22:23:51.180088 [info]:  SqlConnPool num: 12, ThreadPool num: 6
