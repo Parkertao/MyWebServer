@@ -283,5 +283,22 @@ bool HttpRequest::UserVerify(const std::string& name, const std::string& passwor
     }
     mysql_free_result(res);
 
-    // 
+    // 注册行为 且 用户名未被使用
+    if (!logined && flag) 
+    {
+        LOG_DEBUG("Register!");
+        bzero(order, 256);
+        snprintf(order, 256, "INSERT INTO user(username, passwd) VALUES('%s', '%s')", 
+                    name.c_str(), password.c_str());
+        LOG_DEBUG("%s", order);
+        if (mysql_query(sql, order))
+        {
+            LOG_DEBUG("Insert error!");
+            flag = false;
+        }
+        flag = true;
+    }
+    SqlConnPool::Instance() -> FreeSqlConn(sql);
+    LOG_DEBUG("User Verify Successfully!");
+    return flag;
 }
