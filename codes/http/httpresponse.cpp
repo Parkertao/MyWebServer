@@ -84,7 +84,7 @@ void HttpResponse::MakeResponse(Buffer& buffer) {
     {
         code_ = 403;
     }
-    else if (code_ = -1)
+    else if (code_ == -1)
     {
         code_ = 200;
     }

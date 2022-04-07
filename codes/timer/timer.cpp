@@ -119,7 +119,7 @@ void Timer::pop() {
 
 int Timer::GetNextTick() {
     Tick();
-    size_t ret = 0;
+    size_t ret = -1;
     if (!heap_.empty()) 
     {
         ret = std::chrono::duration_cast<Ms>(heap_.front().expires - Clock::now()).count();

@@ -151,10 +151,13 @@ void WebServer::AddClient(int fd, sockaddr_in addr) {
 void WebServer::DealListen() {
     struct sockaddr_in addr;
     socklen_t length = sizeof(addr);
-    while (listen_event_ & EPOLLET)
-    {
+    do {
         int fd = accept(listen_fd_, (struct sockaddr *)&addr, &length);
-        if (fd < 0) return;
+        if (fd <= 0) 
+        {
+            LOG_DEBUG("Accept Error: %s", strerror(errno));
+            return;
+        }
         else if (HttpConn::user_count >= kMaxFd)
         {
             SendError(fd, "Server busy!");
@@ -162,7 +165,7 @@ void WebServer::DealListen() {
             return;
         }
         AddClient(fd, addr);
-    }
+    } while (listen_event_ & EPOLLET);
 }
 
 void WebServer::DealRead(HttpConn* client) {
