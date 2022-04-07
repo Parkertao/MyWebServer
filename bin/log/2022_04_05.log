@@ -1,0 +1,14 @@
+2022-04-05 19:58:25.799930 [info]:  --------------Server Init!------------------
+2022-04-05 19:58:25.799967 [info]:  Port:9006, OpenLinger: false
+2022-04-05 19:58:25.799974 [info]:  Listen Mode: ET, OpenConn Mode: ET
+2022-04-05 19:58:25.799977 [info]:  LogSys level: 0
+2022-04-05 19:58:25.799980 [info]:  srcDir: /home/tau/MyTinyWebServer/bin/../resources/
+2022-04-05 19:58:25.799984 [info]:  SqlConnPool num: 1, ThreadPool num: 1
+2022-04-05 19:58:51.780056 [info]:  --------------Server Start!-------------
+2022-04-05 20:35:02.077938 [info]:  --------------Server Init!------------------
+2022-04-05 20:35:02.077972 [info]:  Port:9006, OpenLinger: false
+2022-04-05 20:35:02.078141 [info]:  Listen Mode: ET, OpenConn Mode: ET
+2022-04-05 20:35:02.078164 [info]:  LogSys level: 0
+2022-04-05 20:35:02.078170 [info]:  srcDir: /home/tau/MyTinyWebServer/bin/../resources/
+2022-04-05 20:35:02.078174 [info]:  SqlConnPool num: 1, ThreadPool num: 1
+2022-04-05 20:35:11.432525 [info]:  --------------Server Start!-------------
