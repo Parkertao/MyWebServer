@@ -10,7 +10,7 @@
 
 ## 环境
 
-* Linux 20.04
+* Ubuntu 20.04
 * C++ 14
 * Mysql
 
