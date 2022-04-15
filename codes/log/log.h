@@ -69,12 +69,20 @@ private:
     std::mutex mtx_;
 };
 
+// 定义LOG等级
+#define LOG_BASE(current_level, format, ...) \
+    do {\
+        Log* log = Log::Instance();\
+        if (log->open() && log->level() <= current_level) {\
+            log->WriteLog(current_level, format, ##__VA_ARGS__); \
+            log->Flush();\
+        }\
+    } while(0);
 
-#define LOG_DEBUG(format, ...) if(Log::Instance()->open()) {Log::Instance()->WriteLog(0, format, ##__VA_ARGS__); Log::Instance()->Flush();}
-#define LOG_INFO(format, ...) if(Log::Instance()->open()) {Log::Instance()->WriteLog(1, format, ##__VA_ARGS__); Log::Instance()->Flush();}
-#define LOG_WARN(format, ...) if(Log::Instance()->open()) {Log::Instance()->WriteLog(2, format, ##__VA_ARGS__); Log::Instance()->Flush();}
-#define LOG_ERROR(format, ...) if(Log::Instance()->open()) {Log::Instance()->WriteLog(3, format, ##__VA_ARGS__); Log::Instance()->Flush();}
-
+#define LOG_DEBUG(format, ...) do {LOG_BASE(0, format, ##__VA_ARGS__)} while(0);
+#define LOG_INFO(format, ...) do {LOG_BASE(1, format, ##__VA_ARGS__)} while(0);
+#define LOG_WARN(format, ...) do {LOG_BASE(2, format, ##__VA_ARGS__)} while(0);
+#define LOG_ERROR(format, ...) do {LOG_BASE(3, format, ##__VA_ARGS__)} while(0);
 
 
 #endif
