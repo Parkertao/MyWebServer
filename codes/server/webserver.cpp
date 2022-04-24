@@ -79,6 +79,7 @@ void WebServer::InitEventMode(int trig_mode) {
 }
 
 void WebServer::Start() {
+    // epoll_wait timeout = -1, 一直阻塞等待事件
     int time_ms = -1;
     if (!closed_)
     {

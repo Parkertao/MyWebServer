@@ -81,6 +81,7 @@ void Timer::DeleteNode(size_t index) {
     assert(!heap_.empty() && index >= 0 && index < heap_.size());
     // 将要删除的节点调整到队尾，再删除
     size_t floor = heap_.size() - 1;
+    assert(index <= floor);
     if (index < floor)
     {
         SwapNode(index, floor);

@@ -47,16 +47,20 @@ public:
     ~ThreadPool() {
         if (static_cast<bool>(pool_))
         {
-            std::lock_guard<std::mutex> locker(pool_ -> mtx);
-            pool_ -> closed = true;
+            {
+                std::lock_guard<std::mutex> locker(pool_ -> mtx);
+                pool_ -> closed = true;
+            }
         }
         pool_ -> cond.notify_all();
     }
 
     template <typename F>
     void AddTask(F&& task) {
-        std::lock_guard<std::mutex> lokcer(pool_ -> mtx);
-        pool_ -> tasks.emplace(std::forward<F>(task));
+        {
+            std::lock_guard<std::mutex> lokcer(pool_ -> mtx);
+            pool_ -> tasks.emplace(std::forward<F>(task));
+        }
         pool_ -> cond.notify_one();
     }
 

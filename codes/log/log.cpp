@@ -97,22 +97,24 @@ void Log::init (int level = 1, const char* path, const char* suffix, int max_que
                 path_, t.tm_year + 1900, t.tm_mon + 1, t.tm_mday, suffix_);
     today_ = t.tm_mday;
 
-    std::lock_guard<std::mutex> locker(mtx_);
-    buffer_.RetrieveAll();
-    if (fp_)
     {
-        Flush();
-        fclose(fp_);
-    }
+        std::lock_guard<std::mutex> locker(mtx_);
+        buffer_.RetrieveAll();
+        if (fp_)
+        {
+            Flush();
+            fclose(fp_);
+        }
 
-    fp_ = fopen(file_name, "a");
-    // 如果创建失败
-    if (fp_ == nullptr)
-    {
-        mkdir(path_, 0777);
         fp_ = fopen(file_name, "a");
+        // 如果创建失败
+        if (fp_ == nullptr)
+        {
+            mkdir(path_, 0777);
+            fp_ = fopen(file_name, "a");
+        }
+        assert(fp_ != nullptr);
     }
-    assert(fp_);
 }
 
 void Log::WriteLog(int level, const char* format, ...) {
@@ -123,7 +125,7 @@ void Log::WriteLog(int level, const char* format, ...) {
     // 
     struct tm *systime = localtime(&t_second);
     struct tm t = *systime;
-    
+    va_list valist;
 
     // 日志日期不对或内容已满，新建一个日志文件
     if (today_ != t.tm_mday || (line_count_ && (line_count_ % max_lines == 0)))
@@ -155,36 +157,37 @@ void Log::WriteLog(int level, const char* format, ...) {
         assert(fp_);
     }
 
-    // 写操作
-    std::unique_lock<std::mutex> locker(mtx_);
-    line_count_++;
-    int n = snprintf(const_cast<char*>(buffer_.write_position()), 
-                        128, "%d-%02d-%02d %02d:%02d:%02d.%06ld ",
-                        t.tm_year + 1900, t.tm_mon + 1, t.tm_mday,
-                        t.tm_hour, t.tm_min, t.tm_sec, now.tv_usec);
-
-    buffer_.HasWritten(n);
-    AppendLogLevelTitle(level);
-
-    va_list valist;
-    va_start(valist, format);
-    int m = vsnprintf(const_cast<char*>(buffer_.write_position()), 
-                        buffer_.WriteableBytes(), format, valist);
-    va_end(valist);
-
-    buffer_.HasWritten(m);
-    buffer_.Append("\n\0", 2);
-
-    // 如果采用异步模式，将buffer中的内容加入工作队列
-    if (is_async_ && deque_ && !deque_ -> full())
     {
-        deque_ -> push_back(buffer_.RetrieveAllToStr());
+        // 写操作
+        std::unique_lock<std::mutex> locker(mtx_);
+        line_count_++;
+        int n = snprintf(const_cast<char*>(buffer_.write_position()), 
+                            128, "%d-%02d-%02d %02d:%02d:%02d.%06ld ",
+                            t.tm_year + 1900, t.tm_mon + 1, t.tm_mday,
+                            t.tm_hour, t.tm_min, t.tm_sec, now.tv_usec);
+
+        buffer_.HasWritten(n);
+        AppendLogLevelTitle(level);
+
+        va_start(valist, format);
+        int m = vsnprintf(const_cast<char*>(buffer_.write_position()), 
+                            buffer_.WriteableBytes(), format, valist);
+        va_end(valist);
+
+        buffer_.HasWritten(m);
+        buffer_.Append("\n\0", 2);
+
+        // 如果采用异步模式，将buffer中的内容加入工作队列
+        if (is_async_ && deque_ && !deque_ -> full())
+        {
+            deque_ -> push_back(buffer_.RetrieveAllToStr());
+        }
+        else
+        {
+            fputs(buffer_.read_position(), fp_);
+        }
+        buffer_.RetrieveAll();
     }
-    else
-    {
-        fputs(buffer_.read_position(), fp_);
-    }
-    buffer_.RetrieveAll();
 }
 
 void Log::AppendLogLevelTitle(int level) {
@@ -197,7 +200,7 @@ void Log::AppendLogLevelTitle(int level) {
         buffer_.Append("[info]:  ", 9);
         break;
     case 2:
-        buffer_.Append("[warn]:  ",9);
+        buffer_.Append("[warn]:  ", 9);
         break;
     case 3:
         buffer_.Append("[error]: ", 9);

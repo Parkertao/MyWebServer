@@ -60,18 +60,16 @@ int HttpConn::GetPort() const {
 
 ssize_t HttpConn::read(int& save_errno) {
     ssize_t length = -1;
-    while (ET_mode) 
-    {
+    do {
         length = read_buffer_.ReadFd(fd_, save_errno);
         if (length <= 0) break;
-    }
+    } while (ET_mode);
     return length;
 }
 
 ssize_t HttpConn::write(int& save_errno) {
     ssize_t length = -1;
-    while (ET_mode || WriteableBytes() > 10240)
-    {
+    do {
         length = writev(fd_, iovec_, iovec_count_);
         if (length <= 0)
         {
@@ -93,13 +91,16 @@ ssize_t HttpConn::write(int& save_errno) {
             iovec_[0].iov_len -= length; 
             write_buffer_.Retrieve(length);
         }
-    }
+    } while (ET_mode || WriteableBytes() > 10240);
     return length;
 }
 
 bool HttpConn::Process() {
     request_.Init();
-    if (read_buffer_.ReadableBytes() <= 0) return false;
+    if (read_buffer_.ReadableBytes() <= 0)
+    {
+        return false;
+    }
     else if (request_.Parse(read_buffer_))
     {
         LOG_DEBUG("%s", request_.path().c_str());

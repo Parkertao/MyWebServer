@@ -33,7 +33,8 @@ bool HttpRequest::alive() const {
 
 bool HttpRequest::Parse(Buffer& buffer) {
     const char crlf[4] = "\r\n";
-    if (buffer.ReadableBytes() <= 0) return false;
+    if (buffer.ReadableBytes() <= 0)
+        return false;
 
     while (buffer.ReadableBytes() && state_ != FINISH)
     {
@@ -47,6 +48,7 @@ bool HttpRequest::Parse(Buffer& buffer) {
             {
                 return false;
             }
+            ParsePath();
             break;
         case HEADERS:
             ParseHeader(line);
@@ -144,7 +146,7 @@ std::string HttpRequest::version() const {
 
 std::string HttpRequest::GetPost(const std::string& key) const {
     assert(key != "");
-    if (post_.count(key) == 1) 
+    if (post_.count(key)) 
     {
         return post_.find(key) -> second;
     }
@@ -152,7 +154,7 @@ std::string HttpRequest::GetPost(const std::string& key) const {
 }
 
 std::string HttpRequest::GetPost(const char* key) const {
-    assert(key);
+    assert(key != nullptr);
     if (post_.count(key))
     {
         return post_.find(key) -> second;
@@ -170,7 +172,7 @@ void HttpRequest::ParsePost() {
             LOG_DEBUG("Tag: %d", tag);
             if (tag == 0 || tag == 1)
             {
-                bool logined = tag == 1;
+                bool logined = (tag == 1);
                 if (UserVerify(post_["username"], post_["password"], logined))
                 {
                     path_ = "/welcome.html";

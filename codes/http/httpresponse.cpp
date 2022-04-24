@@ -98,7 +98,6 @@ void HttpResponse::ErrorHtml() {
     if (kCodePath.count(code_))
     {
         path_ = kCodePath.find(code_) -> second;
-        // path_ = kCodePath[code_];
         stat((source_directory_ + path_).data(), &mmFileStatus_);
     }
 }
@@ -108,13 +107,11 @@ void HttpResponse::AddStateLine(Buffer& buffer) {
     if (kCodePath.count(code_))
     {
         status = kCodePath.find(code_) -> second;
-        // status = kCodePath[code_];
     }
     else
     {
         code_ = 400;
         status = kCodePath.find(code_) -> second;
-        // status = kCodePath[code_];
     }
     buffer.Append("HTTP/1.1 " + std::to_string(code_) + " " + status + "\r\n");
 }
@@ -162,12 +159,14 @@ void HttpResponse::UnmapFile() {
 }
 
 std::string HttpResponse::GetFileType() {
+    // 判断文件类型
     std::string::size_type idx = path_.find_last_of('.');
-    if (idx == std::string::npos) return "text/plain";
+    if (idx == std::string::npos) 
+        return "text/plain";
 
     std::string suffix = path_.substr(idx);
-    if (kSuffixType.count(suffix)) return kSuffixType.find(suffix) -> second;
-    // if (kSuffixType.count(suffix)) return kSuffixType[suffix];
+    if (kSuffixType.count(suffix)) 
+        return kSuffixType.find(suffix) -> second;
 
     return "text/plain";
 }
@@ -177,10 +176,9 @@ void HttpResponse::ErrorContent(Buffer& buffer, std::string&& message)
     std::string body, status;
     body += "<html><title>Error</title>";
     body += "<body bgcolor=\"ffffff\">";
-    if(kCodeStatus.count(code_) == 1) 
+    if(kCodeStatus.count(code_)) 
     {
         status = kCodeStatus.find(code_) -> second;
-        // status = kCodeStatus[code_];
     } 
     else 
     {
@@ -188,7 +186,7 @@ void HttpResponse::ErrorContent(Buffer& buffer, std::string&& message)
     }
     body += std::to_string(code_) + " : " + status  + "\n";
     body += "<p>" + message + "</p>";
-    body += "<hr><em>TinyWebServer</em></body></html>";
+    body += "<hr><em>WebServer</em></body></html>";
 
     buffer.Append("Content-length: " + std::to_string(body.size()) + "\r\n\r\n");
     buffer.Append(body);

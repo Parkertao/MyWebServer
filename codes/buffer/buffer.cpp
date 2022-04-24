@@ -70,7 +70,6 @@ void Buffer::MakeSpace(size_t length) {
     {
         size_t readable = ReadableBytes();
         std::copy(buffer_begin() + read_position_, buffer_begin() + write_position_, buffer_begin());
-        // std::copy(buffer_.begin() + read_position_, buffer_.begin() + write_position_, buffer_.begin());
         read_position_ = 0;
         write_position_ = read_position_ + readable;
         assert(readable == ReadableBytes());

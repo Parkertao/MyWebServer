@@ -10,7 +10,6 @@
 #include <mutex>
 #include <deque>
 #include <condition_variable>
-// #include <sys/time.h>
 #include <cassert>
 
 template <typename T>
@@ -74,9 +73,11 @@ BlockQueue<T>::~BlockQueue() {
 
 template <typename T>
 void BlockQueue<T>::Close() {
-    std::lock_guard<std::mutex> lokcer(mtx_);
-    deque_.clear();
-    closed_ = true;
+    {
+        std::lock_guard<std::mutex> lokcer(mtx_);
+        deque_.clear();
+        closed_ = true;
+    }
     condition_producer_.notify_all();
     condition_consumer_.notify_all();
 }

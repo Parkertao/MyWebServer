@@ -39,7 +39,7 @@ void SqlConnPool::Init(const char* host, int port, const char* user, const char*
         if (!sql)
         {
             LOG_DEBUG("MySql connect error!");
-            assert(sql);
+            // assert(sql);
         }
         conn_queue_.push(sql);
     }
